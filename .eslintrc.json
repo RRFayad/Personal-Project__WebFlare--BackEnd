@@ -16,6 +16,7 @@
   },
   "rules": {
     "linebreak-style": "off",
-    "semi": ["error", "always"]
+    "semi": ["error", "always"],
+    "no-unused-vars": "off"
   }
 }
