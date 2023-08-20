@@ -8,12 +8,14 @@
     "airbnb-base",
     "prettier",
     "prettier/prettier",
-    "plugin:prettier/recommended"
+    "plugin:prettier/recommended",
+    "eslint:recommended"
   ],
   "parserOptions": {
     "ecmaVersion": "latest"
   },
   "rules": {
-    "linebreak-style": "off"
+    "linebreak-style": "off",
+    "semi": ["error", "always"]
   }
 }
