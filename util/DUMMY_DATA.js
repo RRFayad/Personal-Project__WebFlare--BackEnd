@@ -192,7 +192,7 @@ const DUMMY_USERS = [
       'https://www.designerd.com.br/wp-content/uploads/2019/04/imagens-blogs-chamar-atencao-publico-fb.jpg',
     linkedinUrl: 'https://www.linkedin.com',
     name: 'test three',
-    password: 'QPwo!)29',
+    password: '$2a$12$fsL9P2010J/za6iuUqaKLesI8cOk1Dt2CB81Ugdu6HYyFHRmWgEHm', //  hashed 1234
   },
   {
     country: 'Brazil',
