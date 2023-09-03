@@ -1,5 +1,7 @@
 const express = require('express');
 const bodyParser = require('body-parser');
+const mongoose = require('mongoose');
+require('dotenv').config();
 
 const usersRoutes = require('./routes/users-routes');
 const businessesRoutes = require('./routes/businesses-routes');
@@ -16,4 +18,9 @@ app.use((error, req, res, next) => {
   res.json({ message: error.message });
 });
 
-app.listen(5000);
+mongoose
+  .connect(
+    `mongodb+srv://renanrfayad:${process.env.MONGO_PROJECT_PASSWORD}@webflare-cluster.qhiblj4.mongodb.net/`,
+  )
+  .then(() => app.listen(5000))
+  .catch(err => console.log(err));
