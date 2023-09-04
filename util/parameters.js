@@ -1,0 +1,32 @@
+exports.businessTypesOptions = [
+  'App / SaaS',
+  'Blog / Content',
+  'E-Commerce',
+  'Forum',
+  'IG Profile',
+  'MarketPlace',
+  'Services',
+  'Tik Tok Profile',
+  'Others',
+];
+
+exports.nichesOptions = [
+  'Arts',
+  'Automotive',
+  'Beauty',
+  'Education',
+  'Entertainment / Games',
+  'Fashion',
+  'Food',
+  'Health',
+  'Home & Garden',
+  'Hobbies',
+  'Make Money Online',
+  'Music',
+  'Pet',
+  'Photography',
+  'Real State',
+  'Sports',
+  'Technology',
+  'Others',
+];
