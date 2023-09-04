@@ -1,5 +1,7 @@
-const { v4: uuid } = require('uuid');
+const mongoose = require('mongoose');
 const bcrypt = require('bcryptjs');
+const HttpError = require('../models/http-error');
+const User = require('../models/user-model');
 
 const { users } = require('../util/DUMMY_DATA');
 
@@ -68,31 +70,46 @@ const updatePasswordById = (req, res, next) => {
   return res.json(newUserData);
 };
 
-const signUp = (req, res, next) => {
-  const { name, imageUrl, linkedinUrl, country, email, password, description } =
+const signUp = async (req, res, next) => {
+  const { name, imageUrl, profileUrl, country, email, password, description } =
     req.body;
 
-  if (users.findIndex(item => item.email === email) !== -1) {
-    const error = new Error('E-mail already exists');
-    error.status = 404;
-    return next(error);
+  let existingUser;
+  try {
+    existingUser = await User.findOne({ email });
+  } catch (err) {
+    return next(new HttpError(`Could not check e-mail - "${err}"`, 500));
   }
 
-  const hashedPassword = bcrypt.hashSync(password, 12);
-  const newUserData = {
-    id: uuid(),
+  if (existingUser) {
+    return next(new HttpError('E-mail already registered', 422));
+  }
+
+  const hashedPassword = await bcrypt.hash(password, 12);
+  const newUser = new User({
     name,
-    imageUrl,
-    linkedinUrl,
-    country,
     email,
+    country,
+    imageUrl,
+    profileUrl,
     password: hashedPassword,
     description,
-  };
+    businesses: [],
+    offers: [],
+  });
 
-  users.push(newUserData);
-  // delete newUserData.password;
-  return res.json(newUserData);
+  let result;
+  try {
+    result = await newUser.save();
+  } catch (error) {
+    return next(new HttpError(`Sign Up failed - "${error}"`, 500));
+  }
+
+  const newUserData = result.toObject({ gettes: true });
+
+  delete newUserData.password;
+
+  return res.status(201).json(newUserData);
 };
 
 const login = (req, res, next) => {

@@ -3,7 +3,7 @@ const { nichesOptions, businessTypesOptions } = require('../util/parameters');
 
 const businessSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  imageUrl: { type: String, required: false },
+  imageUrl: { type: String, required: true },
   type: { type: String, required: true, enum: businessTypesOptions },
   niche: { type: String, required: true, enum: nichesOptions },
   age: { type: Number, required: true },
@@ -11,7 +11,7 @@ const businessSchema = new mongoose.Schema({
   monthlyProfit: { type: Number, required: true },
   askingPrice: { type: Number, required: true, unique: true },
   description: { type: String, required: true },
-  ownerId: [{ type: mongoose.Types.ObjectId, required: true, ref: 'User' }],
+  owner: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });
 
 module.exports = mongoose.model('Business', businessSchema);
