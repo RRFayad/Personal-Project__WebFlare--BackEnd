@@ -23,7 +23,6 @@ mongoose
     `mongodb+srv://renanrfayad:${process.env.MONGO_PROJECT_PASSWORD}@webflare-cluster.qhiblj4.mongodb.net/`,
   )
   .then(() => {
-    console.log('Connected to the DB');
     app.listen(5000);
   })
   .catch(err => console.log(err));

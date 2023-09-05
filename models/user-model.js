@@ -9,7 +9,9 @@ const userSchema = new mongoose.Schema({
   profileUrl: { type: String, required: false },
   country: { type: String, required: true },
   description: { type: String, required: true },
-  businesses: [{ type: mongoose.Types.ObjectId, required: true, ref: 'User' }],
+  businesses: [
+    { type: mongoose.Types.ObjectId, required: true, ref: 'Business' },
+  ],
   offers: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Offer' }],
 });
 

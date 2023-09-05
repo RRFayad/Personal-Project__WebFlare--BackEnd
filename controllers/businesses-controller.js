@@ -22,6 +22,24 @@ const getAllBusinesses = async (req, res, next) => {
   });
 };
 
+const getBusinessesByUserId = async (req, res, next) => {
+  const userId = req.params.uid;
+
+  let businesses;
+  try {
+    const populatedUser = await User.findById(userId).populate('businesses');
+    businesses = populatedUser.businesses;
+  } catch (error) {
+    return next(new HttpError(`Saving business failed - "${error}"`, 500));
+  }
+
+  return res.json({
+    businesses: businesses.map(business =>
+      business.toObject({ getters: true }),
+    ),
+  });
+};
+
 const createBusiness = async (req, res, next) => {
   const {
     title,
@@ -76,3 +94,4 @@ const createBusiness = async (req, res, next) => {
 
 exports.getAllBusinesses = getAllBusinesses;
 exports.createBusiness = createBusiness;
+exports.getBusinessesByUserId = getBusinessesByUserId;
