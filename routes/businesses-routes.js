@@ -7,9 +7,9 @@ const router = express.Router();
 
 router.get('/', businessControllers.getAllBusinesses);
 router.get('/user/:uid', businessControllers.getBusinessesByUserId);
-router.get('/:bid', (req, res, next) => {});
+router.get('/:bid', businessControllers.getBusinessById);
 router.post('/', businessControllers.createBusiness);
-router.patch('/:bid', (req, res, next) => {});
+router.patch('/:bid', businessControllers.updateBusinessById);
 router.delete('/:bid', (req, res, next) => {});
 
 module.exports = router;

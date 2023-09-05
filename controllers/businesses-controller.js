@@ -40,6 +40,23 @@ const getBusinessesByUserId = async (req, res, next) => {
   });
 };
 
+const getBusinessById = async (req, res, next) => {
+  const businessId = req.params.bid;
+
+  let business;
+  try {
+    business = await Business.findById(businessId);
+  } catch (error) {
+    return next(new HttpError(`Could not fetch business - "${error}"`, 500));
+  }
+
+  if (!business) {
+    return next(new HttpError('Business not found', 404));
+  }
+
+  return res.json({ business: business.toObject({ getters: true }) });
+};
+
 const createBusiness = async (req, res, next) => {
   const {
     title,
@@ -92,6 +109,54 @@ const createBusiness = async (req, res, next) => {
     .json({ business: newBusiness.toObject({ getters: true }) });
 };
 
+const updateBusinessById = async (req, res, next) => {
+  const businessId = req.params.bid;
+
+  const {
+    title,
+    imageUrl,
+    type,
+    niche,
+    age,
+    monthlyRevenue,
+    monthlyProfit,
+    askingPrice,
+    description,
+  } = req.body;
+
+  let business;
+  try {
+    business = await Business.findById(businessId);
+  } catch (error) {
+    return next(new HttpError(`Fetching business failed - "${error}"`, 500));
+  }
+
+  if (!business) {
+    return next(new HttpError('Business not found', 404));
+  }
+
+  business.title = title;
+  business.imageUrl = imageUrl;
+  business.type = type;
+  business.niche = niche;
+  business.age = age;
+  business.monthlyRevenue = monthlyRevenue;
+  business.monthlyProfit = monthlyProfit;
+  business.askingPrice = askingPrice;
+  business.description = description;
+
+  let result;
+  try {
+    result = await business.save();
+  } catch (error) {
+    return next(new HttpError(`Saving business failed - "${error}"`, 500));
+  }
+
+  return res.json({ result: result.toObject({ getters: true }) });
+};
+
 exports.getAllBusinesses = getAllBusinesses;
 exports.createBusiness = createBusiness;
 exports.getBusinessesByUserId = getBusinessesByUserId;
+exports.getBusinessById = getBusinessById;
+exports.updateBusinessById = updateBusinessById;
