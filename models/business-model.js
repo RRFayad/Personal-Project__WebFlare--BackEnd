@@ -9,7 +9,7 @@ const businessSchema = new mongoose.Schema({
   age: { type: Number, required: true },
   monthlyRevenue: { type: Number, required: true },
   monthlyProfit: { type: Number, required: true },
-  askingPrice: { type: Number, required: true, unique: true },
+  askingPrice: { type: Number, required: true },
   description: { type: String, required: true },
   owner: { type: mongoose.Types.ObjectId, required: true, ref: 'User' },
 });

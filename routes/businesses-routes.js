@@ -10,6 +10,6 @@ router.get('/user/:uid', businessControllers.getBusinessesByUserId);
 router.get('/:bid', businessControllers.getBusinessById);
 router.post('/', businessControllers.createBusiness);
 router.patch('/:bid', businessControllers.updateBusinessById);
-router.delete('/:bid', (req, res, next) => {});
+router.delete('/:bid', businessControllers.deleteBusinessById);
 
 module.exports = router;

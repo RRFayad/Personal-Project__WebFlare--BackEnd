@@ -135,15 +135,17 @@ const updateBusinessById = async (req, res, next) => {
     return next(new HttpError('Business not found', 404));
   }
 
-  business.title = title;
-  business.imageUrl = imageUrl;
-  business.type = type;
-  business.niche = niche;
-  business.age = age;
-  business.monthlyRevenue = monthlyRevenue;
-  business.monthlyProfit = monthlyProfit;
-  business.askingPrice = askingPrice;
-  business.description = description;
+  Object.assign(business, {
+    title,
+    imageUrl,
+    type,
+    niche,
+    age,
+    monthlyRevenue,
+    monthlyProfit,
+    askingPrice,
+    description,
+  });
 
   let result;
   try {
@@ -155,8 +157,36 @@ const updateBusinessById = async (req, res, next) => {
   return res.json({ result: result.toObject({ getters: true }) });
 };
 
+const deleteBusinessById = async (req, res, next) => {
+  const businessId = req.params.bid;
+
+  let business;
+  try {
+    business = await Business.findById(businessId).populate('owner');
+  } catch (error) {
+    return next(new HttpError(`Fetching business failed - "${error}"`, 500));
+  }
+
+  if (!business) {
+    return next(new HttpError('Business not found', 404));
+  }
+
+  try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await business.deleteOne({ session });
+    business.owner.businesses.pull(business);
+    await business.owner.save({ session });
+    await session.commitTransaction();
+  } catch (error) {
+    return next(new HttpError(`Deleting business failed - "${error}"`, 500));
+  }
+  return res.json({ message: 'Place Deleted Successfully' });
+};
+
 exports.getAllBusinesses = getAllBusinesses;
 exports.createBusiness = createBusiness;
 exports.getBusinessesByUserId = getBusinessesByUserId;
 exports.getBusinessById = getBusinessById;
 exports.updateBusinessById = updateBusinessById;
+exports.deleteBusinessById = deleteBusinessById;
