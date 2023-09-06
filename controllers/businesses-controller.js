@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { validationResult } = require('express-validator');
 
 const HttpError = require('../models/http-error');
 const Business = require('../models/business-model');
@@ -58,6 +59,11 @@ const getBusinessById = async (req, res, next) => {
 };
 
 const createBusiness = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError('Invalid Inputs'));
+  }
+
   const {
     title,
     imageUrl,
@@ -110,6 +116,11 @@ const createBusiness = async (req, res, next) => {
 };
 
 const updateBusinessById = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError('Invalid Inputs'));
+  }
+
   const businessId = req.params.bid;
 
   const {

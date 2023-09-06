@@ -3,71 +3,86 @@ const bcrypt = require('bcryptjs');
 const HttpError = require('../models/http-error');
 const User = require('../models/user-model');
 
-const { users } = require('../util/DUMMY_DATA');
-
-const getUserById = (req, res, next) => {
+const getUserById = async (req, res, next) => {
   const userId = req.params.uid;
-  const user = users.find(item => userId === item.id);
+
+  let user;
+  try {
+    user = await User.findById(userId, '-password');
+  } catch (error) {
+    return next(new HttpError(`Could not fetch user data - "${error}"`, 500));
+  }
+  if (!user) {
+    return next(new HttpError(`User Id not found`, 404));
+  }
+
+  return res.json({ user: user.toObject({ getters: true }) });
+};
+
+const updateUserById = async (req, res, next) => {
+  const userId = req.params.uid;
+
+  const { name, imageUrl, profileUrl, country, email, description } = req.body;
+
+  let user;
+  try {
+    user = await User.findById(userId, '-password');
+  } catch (error) {
+    return next(new HttpError(`Could not fetch user data - "${error}"`, 500));
+  }
 
   if (!user) {
-    const error = new Error('Could not find user');
-    error.status = 404;
-    return next(error);
-  }
-  delete user.password;
-  return res.json(user);
-};
-
-const updateUserById = (req, res, next) => {
-  const userId = req.params.uid;
-  const { country, description, email, imageUrl, linkedinUrl, name } = req.body;
-  const userIndex = users.findIndex(item => userId === item.id);
-
-  if (userIndex === -1) {
-    const error = new Error('Could not find user');
-    error.status = 404;
-    return next(error);
+    return next(new HttpError(`User Id not found`, 404));
   }
 
-  const newUserData = {
-    ...users[userIndex],
-    country,
-    description,
-    email,
-    imageUrl,
-    linkedinUrl,
+  Object.assign(user, {
     name,
-  };
+    imageUrl,
+    profileUrl,
+    country,
+    email,
+    description,
+  });
 
-  users.splice(userIndex, 1, { ...newUserData });
-  delete newUserData.password;
-  return res.json(newUserData);
+  try {
+    await user.save();
+  } catch (error) {
+    return next(new HttpError(`Could not save user data - "${error}"`, 500));
+  }
+
+  return res.json({ message: 'User updated Successfully' });
 };
 
-const updatePasswordById = (req, res, next) => {
+const updatePasswordById = async (req, res, next) => {
   const userId = req.params.uid;
   const { password, newPassword } = req.body;
-  const userIndex = users.findIndex(
-    item =>
-      userId === item.id &&
-      (bcrypt.compareSync(password, item.password) ||
-        password === item.password),
-  );
 
-  if (userIndex === -1) {
-    const error = new Error('Wrong Passoword');
-    error.status = 404;
-    return next(error);
+  let user;
+  try {
+    user = await User.findById(userId);
+  } catch (error) {
+    return next(new HttpError(`Could not fetch user data - "${error}"`, 500));
   }
 
-  const newUserData = {
-    ...users[userIndex],
-    password: bcrypt.hashSync(newPassword, 12),
-  };
+  if (!user) {
+    return next(new HttpError(`User Id not found`, 404));
+  }
 
-  users.splice(userIndex, 1, { ...newUserData });
-  // delete newUserData.password;
-  return res.json(newUserData);
+  if (bcrypt.compareSync(password, user.password)) {
+    Object.assign(user, {
+      password: await bcrypt.hash(newPassword, 12),
+    });
+  } else {
+    return next(new HttpError(`Password did not match`, 401));
+  }
+
+  try {
+    await user.save();
+  } catch (error) {
+    return next(new HttpError(`Could not save user data - "${error}"`, 500));
+  }
+
+  return res.json({ message: 'Password updated Successfully' });
 };
 
 const signUp = async (req, res, next) => {
@@ -112,20 +127,23 @@ const signUp = async (req, res, next) => {
   return res.status(201).json(newUserData);
 };
 
-const login = (req, res, next) => {
+const login = async (req, res, next) => {
   const { email, password } = req.body;
 
-  const userData = users.find(
-    user => user.email === email && bcrypt.compareSync(password, user.password),
-  );
-
-  if (!userData) {
-    const error = new Error('Invalid Credentials');
-    error.status = 404;
-    return next(error);
+  let user;
+  try {
+    user = await User.findOne({ email });
+  } catch (error) {
+    return next(new HttpError(`Could not fetch user data - "${error}"`, 500));
   }
 
-  return res.json(userData);
+  if (!user || !bcrypt.compareSync(password, user.password)) {
+    return next(new HttpError(`Invalid Credentials`, 401));
+  }
+
+  delete user.password;
+
+  return res.json({ user: user.toObject({ getters: true }) });
 };
 
 exports.getUserById = getUserById;
