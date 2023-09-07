@@ -23,8 +23,7 @@ const getUserById = async (req, res, next) => {
 const updateUserById = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors);
-    return next(new HttpError(`${errors.array()}`, 422));
+    return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
   const userId = req.params.uid;
@@ -63,9 +62,9 @@ const updateUserById = async (req, res, next) => {
 const updatePasswordById = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    console.log(errors);
     return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
+
   const userId = req.params.uid;
   const { password, newPassword } = req.body;
 
@@ -98,6 +97,11 @@ const updatePasswordById = async (req, res, next) => {
 };
 
 const signUp = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    return next(new HttpError(`${errors.array()[0].msg}`, 422));
+  }
+
   const { name, imageUrl, profileUrl, country, email, password, description } =
     req.body;
 
@@ -117,7 +121,9 @@ const signUp = async (req, res, next) => {
     name,
     email,
     country,
-    imageUrl,
+    imageUrl:
+      imageUrl ||
+      'https://w7.pngwing.com/pngs/642/461/png-transparent-computer-icons-user-in-search-of-the-unknown-computer-network-text-logo-thumbnail.png',
     profileUrl,
     password: hashedPassword,
     description,
