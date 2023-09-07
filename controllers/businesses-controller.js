@@ -61,7 +61,7 @@ const getBusinessById = async (req, res, next) => {
 const createBusiness = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(new HttpError('Invalid Inputs'));
+    return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
   const {
@@ -118,7 +118,7 @@ const createBusiness = async (req, res, next) => {
 const updateBusinessById = async (req, res, next) => {
   const errors = validationResult(req);
   if (!errors.isEmpty()) {
-    return next(new HttpError('Invalid Inputs'));
+    return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
   const businessId = req.params.bid;

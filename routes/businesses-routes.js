@@ -11,14 +11,27 @@ router.get('/:bid', businessControllers.getBusinessById);
 router.post(
   '/',
   [
-    check('title').isLength({ min: 3 }),
-    check('type').notEmpty(),
-    check('niche').notEmpty(),
-    check('age').notEmpty().isNumeric(),
-    check('monthlyRevenue').notEmpty().isNumeric(),
-    check('monthlyProfit').notEmpty().isNumeric(),
-    check('askingPrice').notEmpty().isNumeric(),
-    check('description').isLength({ min: 6 }),
+    check('title')
+      .isLength({ min: 3 })
+      .withMessage('Title must have at least 3 characters'),
+    check('type').notEmpty().withMessage('Insert type'),
+    check('niche').notEmpty().withMessage('Insert niche'),
+    check('age').notEmpty().isNumeric().withMessage('Insert a valid age'),
+    check('monthlyRevenue')
+      .notEmpty()
+      .isNumeric()
+      .withMessage('Insert a valid revenue'),
+    check('monthlyProfit')
+      .notEmpty()
+      .isNumeric()
+      .withMessage('Insert a valid profit'),
+    check('askingPrice')
+      .notEmpty()
+      .isNumeric()
+      .withMessage('Insert a valid asking price'),
+    check('description')
+      .isLength({ min: 6 })
+      .withMessage('Insert a valid description (6 characters)'),
     check('ownerId').notEmpty(),
   ],
   businessControllers.createBusiness,
@@ -26,14 +39,28 @@ router.post(
 router.patch(
   '/:bid',
   [
-    check('title').isLength({ min: 3 }),
-    check('type').notEmpty(),
-    check('niche').notEmpty(),
-    check('age').notEmpty().isNumeric(),
-    check('monthlyRevenue').notEmpty().isNumeric(),
-    check('monthlyProfit').notEmpty().isNumeric(),
-    check('askingPrice').notEmpty().isNumeric(),
-    check('description').isLength({ min: 6 }),
+    check('title')
+      .isLength({ min: 3 })
+      .withMessage('Title must have at least 3 characters'),
+    check('type').notEmpty().withMessage('Insert type'),
+    check('niche').notEmpty().withMessage('Insert niche'),
+    check('age').notEmpty().isNumeric().withMessage('Insert a valid age'),
+    check('monthlyRevenue')
+      .notEmpty()
+      .isNumeric()
+      .withMessage('Insert a valid revenue'),
+    check('monthlyProfit')
+      .notEmpty()
+      .isNumeric()
+      .withMessage('Insert a valid profit'),
+    check('askingPrice')
+      .notEmpty()
+      .isNumeric()
+      .withMessage('Insert a valid asking price'),
+    check('description')
+      .isLength({ min: 6 })
+      .withMessage('Insert a valid description (6 characters)'),
+    check('ownerId').notEmpty(),
   ],
   businessControllers.updateBusinessById,
 );
