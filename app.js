@@ -15,7 +15,7 @@ app.use('/api/businesses', businessesRoutes);
 app.use('/api/offers', offersRoutes);
 
 app.use((error, req, res, next) => {
-  res.json({ message: `${error.status} - ${error.message}` });
+  res.json({ message: `${error.message}` });
 });
 
 mongoose

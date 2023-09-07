@@ -1,4 +1,5 @@
 const mongoose = require('mongoose');
+const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const HttpError = require('../models/http-error');
 const User = require('../models/user-model');
@@ -20,6 +21,12 @@ const getUserById = async (req, res, next) => {
 };
 
 const updateUserById = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(new HttpError(`${errors.array()}`, 422));
+  }
+
   const userId = req.params.uid;
 
   const { name, imageUrl, profileUrl, country, email, description } = req.body;
@@ -54,6 +61,11 @@ const updateUserById = async (req, res, next) => {
 };
 
 const updatePasswordById = async (req, res, next) => {
+  const errors = validationResult(req);
+  if (!errors.isEmpty()) {
+    console.log(errors);
+    return next(new HttpError(`${errors.array()[0].msg}`, 422));
+  }
   const userId = req.params.uid;
   const { password, newPassword } = req.body;
 
