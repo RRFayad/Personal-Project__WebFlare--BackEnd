@@ -123,7 +123,7 @@ const signUp = async (req, res, next) => {
     country,
     imageUrl:
       imageUrl ||
-      'https://w7.pngwing.com/pngs/642/461/png-transparent-computer-icons-user-in-search-of-the-unknown-computer-network-text-logo-thumbnail.png',
+      'https://www.designerd.com.br/wp-content/uploads/2019/04/imagens-blogs-chamar-atencao-publico-fb.jpg',
     profileUrl,
     password: hashedPassword,
     description,

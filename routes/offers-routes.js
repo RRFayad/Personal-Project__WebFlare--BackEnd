@@ -1,12 +1,25 @@
 const express = require('express');
+const { check } = require('express-validator');
 const offerControllers = require('../controllers/offers-controller');
 
 const router = express.Router();
 
 router.get('/user/sent/:uid', offerControllers.getOffersByUserId);
 router.get('/user/received/:uid', offerControllers.getOffersByUserId);
-router.post('/', offerControllers.createOffer);
-router.patch('/:oid', (req, res, next) => {});
-router.delete('/:oid', (req, res, next) => {});
+router.post(
+  '/',
+  [
+    check('offerValue')
+      .isNumeric()
+      .custom(value => value > 0)
+      .withMessage('Offer value not valid'),
+    check('message')
+      .isLength({ min: 6 })
+      .withMessage('Description not valid (min 6 characters)'),
+  ],
+  offerControllers.createOffer,
+);
+router.patch('/:oid', offerControllers.acceptOfferById);
+router.delete('/:oid', offerControllers.deleteOfferById);
 
 module.exports = router;

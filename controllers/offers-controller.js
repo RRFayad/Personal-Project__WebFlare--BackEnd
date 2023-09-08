@@ -78,6 +78,70 @@ const createOffer = async (req, res, next) => {
     .json({ newOffer: newOffer.toObject({ getters: true }) });
 };
 
+const acceptOfferById = async (req, res, next) => {
+  const offerId = req.params.oid;
+
+  let offer;
+  try {
+    offer = await Offer.findById(offerId);
+  } catch (error) {
+    return next(new HttpError(`Fetching offer failed - "${error}"`, 500));
+  }
+
+  if (!offer) {
+    return next(new HttpError('Offer not found', 404));
+  }
+
+  offer.status = 'accepted';
+
+  let result;
+  try {
+    result = await Offer.save();
+  } catch (error) {
+    return next(new HttpError(`Saiving offer failed - "${error}"`, 500));
+  }
+
+  return res.json({ offer: result.toObject({ getters: true }) });
+};
+
+const deleteOfferById = async (req, res, next) => {
+  const offerId = req.params.oid;
+
+  let offer;
+  let offerSender;
+  let offerReceiver;
+
+  try {
+    offer = await Offer.findById(offerId).populate(['sender', 'business']);
+    offerSender = offer.sender;
+    const business = await offer.business.populate('owner');
+    offerReceiver = business.owner;
+  } catch (error) {
+    return next(new HttpError(`Fetching data failed - "${error}"`, 500));
+  }
+
+  if (!offer) {
+    return next(new HttpError('Offer not found', 404));
+  }
+
+  try {
+    const session = await mongoose.startSession();
+    session.startTransaction();
+    await offer.deleteOne({ session });
+    await offerSender.sentOffers.pull(offer);
+    await offerReceiver.receivedOffers.pull(offer);
+    await offerSender.save({ session });
+    await offerReceiver.save({ session });
+    await session.commitTransaction();
+  } catch (error) {
+    return next(new HttpError(`Deleting offer failed - "${error}"`, 500));
+  }
+
+  return res.json({ message: 'Offer deleted successfully' });
+};
+
 exports.getOffersByUserId = getOffersByUserId;
 exports.getReceivedOffersByUserId = getReceivedOffersByUserId;
 exports.createOffer = createOffer;
+exports.acceptOfferById = acceptOfferById;
+exports.deleteOfferById = deleteOfferById;
