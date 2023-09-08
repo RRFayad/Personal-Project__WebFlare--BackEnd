@@ -12,7 +12,10 @@ const userSchema = new mongoose.Schema({
   businesses: [
     { type: mongoose.Types.ObjectId, required: true, ref: 'Business' },
   ],
-  offers: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Offer' }],
+  sentOffers: [{ type: mongoose.Types.ObjectId, required: true, ref: 'Offer' }],
+  receivedOffers: [
+    { type: mongoose.Types.ObjectId, required: true, ref: 'Offer' },
+  ],
 });
 
 userSchema.plugin(uniqueValidator);

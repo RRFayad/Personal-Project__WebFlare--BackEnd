@@ -128,7 +128,8 @@ const signUp = async (req, res, next) => {
     password: hashedPassword,
     description,
     businesses: [],
-    offers: [],
+    sentOffers: [],
+    receivedOffers: [],
   });
 
   let result;
