@@ -10,12 +10,22 @@ const offersRoutes = require('./routes/offers-routes');
 const app = express();
 app.use(bodyParser.json());
 
+app.use((req, res, next) => {
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Access-Control-Allow-Headers', 'Content-Type, Authorization');
+  res.setHeader(
+    'Access-Control-Allow-Methods',
+    'GET, POST, PUT, PATCH, DELETE',
+  );
+  next();
+});
+
 app.use('/api/users', usersRoutes);
 app.use('/api/businesses', businessesRoutes);
 app.use('/api/offers', offersRoutes);
 
 app.use((error, req, res, next) => {
-  res.json({ message: `${error.message}` });
+  res.status(error.status).json({ message: `${error.message}` });
 });
 
 mongoose
