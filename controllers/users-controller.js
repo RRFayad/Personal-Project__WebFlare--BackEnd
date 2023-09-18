@@ -50,13 +50,14 @@ const updateUserById = async (req, res, next) => {
     description,
   });
 
+  let updatedUser;
   try {
-    await user.save();
+    updatedUser = await user.save();
   } catch (error) {
     return next(new HttpError(`Could not save user data - "${error}"`, 500));
   }
 
-  return res.json({ message: 'User updated Successfully' });
+  return res.json({ user: updatedUser.toObject({ getters: true }) });
 };
 
 const updatePasswordById = async (req, res, next) => {
