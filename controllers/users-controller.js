@@ -3,6 +3,7 @@ const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
 const HttpError = require('../models/http-error');
 const User = require('../models/user-model');
+const Business = require('../models/business-model');
 
 const getUserById = async (req, res, next) => {
   const userId = req.params.uid;
@@ -18,6 +19,23 @@ const getUserById = async (req, res, next) => {
   }
 
   return res.json({ user: user.toObject({ getters: true }) });
+};
+
+const getUserByBusinessId = async (req, res, next) => {
+  const businessId = req.params.bid;
+
+  let user;
+  try {
+    const populatedBusiness =
+      await Business.findById(businessId).populate('owner');
+    user = populatedBusiness.owner;
+  } catch (error) {
+    return next(new HttpError(`Saving business failed - "${error}"`, 500));
+  }
+
+  return res.json({
+    user: user.toObject({ getters: true }),
+  });
 };
 
 const updateUserById = async (req, res, next) => {
@@ -167,6 +185,7 @@ const login = async (req, res, next) => {
 };
 
 exports.getUserById = getUserById;
+exports.getUserByBusinessId = getUserByBusinessId;
 exports.updateUserById = updateUserById;
 exports.updatePasswordById = updatePasswordById;
 exports.signUp = signUp;

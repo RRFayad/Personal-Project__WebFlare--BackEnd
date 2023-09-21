@@ -6,8 +6,8 @@ const businessControllers = require('../controllers/businesses-controller');
 const router = express.Router();
 
 router.get('/', businessControllers.getAllBusinesses);
-router.get('/user/:uid', businessControllers.getBusinessesByUserId);
 router.get('/:bid', businessControllers.getBusinessById);
+router.get('/user/:uid', businessControllers.getBusinessesByUserId);
 router.post(
   '/',
   [

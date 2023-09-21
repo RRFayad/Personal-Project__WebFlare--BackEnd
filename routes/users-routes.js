@@ -10,6 +10,7 @@ const usersController = require('../controllers/users-controller');
 const router = express.Router();
 
 router.get('/:uid', usersController.getUserById);
+router.get('/business/:bid', usersController.getUserByBusinessId);
 router.post(
   '/signup',
   [
