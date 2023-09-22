@@ -192,7 +192,7 @@ const deleteBusinessById = async (req, res, next) => {
   } catch (error) {
     return next(new HttpError(`Deleting business failed - "${error}"`, 500));
   }
-  return res.json({ message: 'Place Deleted Successfully' });
+  return res.json({ message: 'Business Deleted Successfully' });
 };
 
 exports.getAllBusinesses = getAllBusinesses;
