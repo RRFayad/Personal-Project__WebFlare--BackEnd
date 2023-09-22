@@ -60,7 +60,6 @@ router.patch(
     check('description')
       .isLength({ min: 6 })
       .withMessage('Insert a valid description (6 characters)'),
-    check('ownerId').notEmpty(),
   ],
   businessControllers.updateBusinessById,
 );
