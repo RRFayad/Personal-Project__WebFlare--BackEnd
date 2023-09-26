@@ -4,6 +4,8 @@ const { validationResult } = require('express-validator');
 const HttpError = require('../models/http-error');
 const Business = require('../models/business-model');
 const User = require('../models/user-model');
+const Offer = require('../models/offer-model');
+const offerControllers = require('./offers-controller');
 
 const getAllBusinesses = async (req, res, next) => {
   let businesses;
@@ -107,6 +109,7 @@ const createBusiness = async (req, res, next) => {
     await user.save({ session });
     await session.commitTransaction();
   } catch (err) {
+    console.log(err);
     return next(new HttpError(`Saving business failed - "${err}"`, 500));
   }
 
@@ -165,7 +168,7 @@ const updateBusinessById = async (req, res, next) => {
     return next(new HttpError(`Saving business failed - "${error}"`, 500));
   }
 
-  return res.json({ result: result.toObject({ getters: true }) });
+  return res.json({ business: result.toObject({ getters: true }) });
 };
 
 const deleteBusinessById = async (req, res, next) => {
@@ -178,13 +181,21 @@ const deleteBusinessById = async (req, res, next) => {
     return next(new HttpError(`Fetching business failed - "${error}"`, 500));
   }
 
-  if (!business) {
-    return next(new HttpError('Business not found', 404));
+  let offers;
+  try {
+    offers = await Offer.find({ business: businessId });
+  } catch (error) {
+    return next(new HttpError(`Fetching business failed - "${error}"`, 500));
   }
 
   try {
     const session = await mongoose.startSession();
     session.startTransaction();
+    // eslint-disable-next-line no-restricted-syntax
+    for (const offer of offers) {
+      // eslint-disable-next-line no-await-in-loop
+      await offerControllers.deleteOfferById(offer.id);
+    }
     await business.deleteOne({ session });
     business.owner.businesses.pull(business);
     await business.owner.save({ session });

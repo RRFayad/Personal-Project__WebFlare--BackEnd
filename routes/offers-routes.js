@@ -4,8 +4,8 @@ const offerControllers = require('../controllers/offers-controller');
 
 const router = express.Router();
 
-router.get('/user/sent/:uid', offerControllers.getOffersByUserId);
-router.get('/user/received/:uid', offerControllers.getOffersByUserId);
+router.get('/user/:uid', offerControllers.getOffersByUserId);
+router.get('/:oid', offerControllers.getOfferById);
 router.post(
   '/',
   [

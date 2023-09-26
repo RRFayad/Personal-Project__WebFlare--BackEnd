@@ -5,27 +5,46 @@ const Offer = require('../models/offer-model');
 const Business = require('../models/business-model');
 const User = require('../models/user-model');
 
+const getOfferById = async (req, res, next) => {
+  const offerId = req.params.oid;
+
+  let offer;
+  try {
+    offer = await Offer.findById(offerId)
+      .populate({ path: 'business', populate: { path: 'owner' } })
+      .populate('sender');
+  } catch (error) {
+    return next(new HttpError(`Could not fetch offer - "${error}"`, 500));
+  }
+
+  if (!offer) {
+    return next(new HttpError('Offer not found', 404));
+  }
+
+  return res.json({ offer: offer.toObject({ getters: true }) });
+};
+
 const getOffersByUserId = async (req, res, next) => {
   const userId = req.params.uid;
   let offers = [];
   try {
-    const populatedUser = await User.findById(userId).populate(
-      req.path.split('/')[2] === 'sent' ? 'sentOffers' : 'receivedOffers',
-    );
-    offers =
-      req.path.split('/')[2] === 'sent'
-        ? populatedUser.sentOffers
-        : populatedUser.receivedOffers;
+    const populatedUser = await User.findById(userId)
+      .populate('sentOffers')
+      .populate('receivedOffers');
+    offers = {
+      sentOffers: populatedUser.sentOffers.map(offer =>
+        offer.toObject({ getters: true }),
+      ),
+      receivedOffers: populatedUser.receivedOffers.map(offer =>
+        offer.toObject({ getters: true }),
+      ),
+    };
   } catch (error) {
     return next(new HttpError(`Could not fetch user data - "${error}"`, 500));
   }
 
-  return res.json({
-    offers: offers.map(offer => offer.toObject({ getters: true })),
-  });
+  return res.json({ offers });
 };
-
-const getReceivedOffersByUserId = async (req, res, next) => {};
 
 const createOffer = async (req, res, next) => {
   const errors = validationResult(req);
@@ -33,12 +52,7 @@ const createOffer = async (req, res, next) => {
     return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
-  const {
-    business: businessId,
-    message,
-    offerValue,
-    sender: senderId,
-  } = req.body;
+  const { businessId, message, offerValue, senderId } = req.body;
 
   const newOffer = new Offer({
     business: businessId,
@@ -73,9 +87,7 @@ const createOffer = async (req, res, next) => {
     return next(new HttpError(`Creating Offer failed - "${error}"`, 500));
   }
 
-  return res
-    .status(201)
-    .json({ newOffer: newOffer.toObject({ getters: true }) });
+  return res.status(201).json({ offer: newOffer.toObject({ getters: true }) });
 };
 
 const acceptOfferById = async (req, res, next) => {
@@ -96,7 +108,7 @@ const acceptOfferById = async (req, res, next) => {
 
   let result;
   try {
-    result = await Offer.save();
+    result = await offer.save();
   } catch (error) {
     return next(new HttpError(`Saiving offer failed - "${error}"`, 500));
   }
@@ -105,7 +117,7 @@ const acceptOfferById = async (req, res, next) => {
 };
 
 const deleteOfferById = async (req, res, next) => {
-  const offerId = req.params.oid;
+  const offerId = req.params ? req.params.oid : req; // I created this logic to be able to reuse this logic inside the business controller
 
   let offer;
   let offerSender;
@@ -137,11 +149,11 @@ const deleteOfferById = async (req, res, next) => {
     return next(new HttpError(`Deleting offer failed - "${error}"`, 500));
   }
 
-  return res.json({ message: 'Offer deleted successfully' });
+  return req.params && res.json({ message: 'Offer deleted successfully' });
 };
 
+exports.getOfferById = getOfferById;
 exports.getOffersByUserId = getOffersByUserId;
-exports.getReceivedOffersByUserId = getReceivedOffersByUserId;
 exports.createOffer = createOffer;
 exports.acceptOfferById = acceptOfferById;
 exports.deleteOfferById = deleteOfferById;
