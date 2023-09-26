@@ -158,11 +158,11 @@ const signUp = async (req, res, next) => {
     return next(new HttpError(`Sign Up failed - "${error}"`, 500));
   }
 
-  const newUserData = result.toObject({ gettes: true });
+  const newUserData = result.toObject({ getters: true });
 
   delete newUserData.password;
 
-  return res.status(201).json(newUserData);
+  return res.status(201).json({ user: newUserData });
 };
 
 const login = async (req, res, next) => {
