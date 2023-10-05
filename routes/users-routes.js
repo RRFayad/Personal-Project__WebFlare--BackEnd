@@ -6,6 +6,7 @@ const {
   urlValidator,
 } = require('../util/validators-and-formatters');
 const usersController = require('../controllers/users-controller');
+const fileUpload = require('../middlewares/file-upload');
 
 const router = express.Router();
 
@@ -13,12 +14,9 @@ router.get('/:uid', usersController.getUserById);
 router.get('/business/:bid', usersController.getUserByBusinessId);
 router.post(
   '/signup',
+  fileUpload.single('image'),
   [
     check('name').custom(fullNameValidator).withMessage('Insert Full Name'),
-    check('imageUrl')
-      .optional()
-      .custom(urlValidator)
-      .withMessage('Image Url not valid'),
     check('profileUrl')
       .optional()
       .custom(urlValidator)

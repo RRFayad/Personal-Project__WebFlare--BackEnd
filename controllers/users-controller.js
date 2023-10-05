@@ -46,7 +46,7 @@ const updateUserById = async (req, res, next) => {
 
   const userId = req.params.uid;
 
-  const { name, imageUrl, profileUrl, country, email, description } = req.body;
+  const { name, image, profileUrl, country, email, description } = req.body;
 
   let user;
   try {
@@ -61,7 +61,7 @@ const updateUserById = async (req, res, next) => {
 
   Object.assign(user, {
     name,
-    imageUrl,
+    image,
     profileUrl,
     country,
     email,
@@ -121,8 +121,7 @@ const signUp = async (req, res, next) => {
     return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
-  const { name, imageUrl, profileUrl, country, email, password, description } =
-    req.body;
+  const { name, profileUrl, country, email, password, description } = req.body;
 
   let existingUser;
   try {
@@ -136,13 +135,12 @@ const signUp = async (req, res, next) => {
   }
 
   const hashedPassword = await bcrypt.hash(password, 12);
+
   const newUser = new User({
     name,
     email,
     country,
-    imageUrl:
-      imageUrl ||
-      'https://www.designerd.com.br/wp-content/uploads/2019/04/imagens-blogs-chamar-atencao-publico-fb.jpg',
+    image: req.file ? req.file.path : 'images/users/default-user-image-owl.jpg',
     profileUrl,
     password: hashedPassword,
     description,
