@@ -20,7 +20,20 @@ const fileUpload = multer({
     },
     filename: (req, file, cb) => {
       const ext = MIME_TYPE_MAP[file.mimetype];
-      cb(null, `${uuid()}.${ext}`);
+      if (req.baseUrl === '/api/users') {
+        const formattedUserName = `${req.body.name.replace(
+          / /g,
+          '-',
+        )}__${Date.now()}`;
+        cb(null, `${formattedUserName}.${ext}`);
+      }
+      if (req.baseUrl === '/api/business') {
+        const formattedTitle = `${req.body.title.replace(
+          / /g,
+          '-',
+        )}__${Date.now()}`;
+        cb(null, `${formattedTitle}.${ext}`);
+      }
     },
     fileFilter: (req, file, cb) => {
       // the  validation

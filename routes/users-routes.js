@@ -37,6 +37,7 @@ router.post(
 router.post('/login', usersController.login);
 router.patch(
   '/:uid',
+  fileUpload.single('image'),
   [
     check('name').custom(fullNameValidator).withMessage('Insert Full Name'),
     check('imageUrl')

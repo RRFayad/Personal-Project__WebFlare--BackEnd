@@ -1,3 +1,4 @@
+const fs = require('fs');
 const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
@@ -46,7 +47,7 @@ const updateUserById = async (req, res, next) => {
 
   const userId = req.params.uid;
 
-  const { name, image, profileUrl, country, email, description } = req.body;
+  const { name, profileUrl, country, email, description } = req.body;
 
   let user;
   try {
@@ -59,9 +60,17 @@ const updateUserById = async (req, res, next) => {
     return next(new HttpError(`User Id not found`, 404));
   }
 
+  let updatedImage;
+  if (req.file) {
+    updatedImage = req.file.path;
+    fs.unlink(user.image, err => console.log(err));
+  } else {
+    updatedImage = user.image;
+  }
+
   Object.assign(user, {
     name,
-    image,
+    image: updatedImage,
     profileUrl,
     country,
     email,
