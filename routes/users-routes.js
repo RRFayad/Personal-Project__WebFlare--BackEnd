@@ -14,6 +14,7 @@ router.get('/:uid', usersController.getUserById);
 router.get('/business/:bid', usersController.getUserByBusinessId);
 router.post(
   '/signup',
+
   fileUpload.single('image'),
   [
     check('name').custom(fullNameValidator).withMessage('Insert Full Name'),

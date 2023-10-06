@@ -2,6 +2,7 @@ const express = require('express');
 const { check } = require('express-validator');
 
 const businessControllers = require('../controllers/businesses-controller');
+const fileUpload = require('../middlewares/file-upload');
 
 const router = express.Router();
 
@@ -10,6 +11,11 @@ router.get('/:bid', businessControllers.getBusinessById);
 router.get('/user/:uid', businessControllers.getBusinessesByUserId);
 router.post(
   '/',
+  fileUpload.single('image'),
+  (req, res, next) => {
+    console.log('ihaa');
+    next();
+  },
   [
     check('title')
       .isLength({ min: 3 })
@@ -38,6 +44,7 @@ router.post(
 );
 router.patch(
   '/:bid',
+  fileUpload.single('image'),
   [
     check('title')
       .isLength({ min: 3 })

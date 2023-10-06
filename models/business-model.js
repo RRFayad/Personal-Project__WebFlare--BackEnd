@@ -3,7 +3,7 @@ const { nichesOptions, businessTypesOptions } = require('../util/parameters');
 
 const businessSchema = new mongoose.Schema({
   title: { type: String, required: true },
-  imageUrl: { type: String, required: true },
+  image: { type: String, required: true },
   type: { type: String, required: true, enum: businessTypesOptions },
   niche: { type: String, required: true, enum: nichesOptions },
   age: { type: Number, required: true },

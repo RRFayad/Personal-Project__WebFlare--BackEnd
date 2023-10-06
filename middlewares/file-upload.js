@@ -14,7 +14,7 @@ const fileUpload = multer({
       if (req.baseUrl === '/api/users') {
         cb(null, 'images/users');
       }
-      if (req.baseUrl === 'api/businesses') {
+      if (req.baseUrl === '/api/businesses') {
         cb(null, 'images/businesses');
       }
     },
@@ -27,7 +27,7 @@ const fileUpload = multer({
         )}__${Date.now()}`;
         cb(null, `${formattedUserName}.${ext}`);
       }
-      if (req.baseUrl === '/api/business') {
+      if (req.baseUrl === '/api/businesses') {
         const formattedTitle = `${req.body.title.replace(
           / /g,
           '-',
