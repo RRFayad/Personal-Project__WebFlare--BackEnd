@@ -13,7 +13,6 @@ router.post(
   '/',
   fileUpload.single('image'),
   (req, res, next) => {
-    console.log('ihaa');
     next();
   },
   [

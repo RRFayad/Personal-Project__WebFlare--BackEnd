@@ -6,6 +6,8 @@ const HttpError = require('../models/http-error');
 const User = require('../models/user-model');
 const Business = require('../models/business-model');
 
+const defaultImagePath = 'images/users/00_default-user-image-owl.jpg';
+
 const getUserById = async (req, res, next) => {
   const userId = req.params.uid;
 
@@ -50,8 +52,10 @@ const updateUserById = async (req, res, next) => {
   const { name, profileUrl, country, email, description } = req.body;
 
   let user;
+  let currentImage;
   try {
     user = await User.findById(userId, '-password');
+    currentImage = user.image;
   } catch (error) {
     return next(new HttpError(`Could not fetch user data - "${error}"`, 500));
   }
@@ -63,7 +67,6 @@ const updateUserById = async (req, res, next) => {
   let updatedImage;
   if (req.file) {
     updatedImage = req.file.path;
-    fs.unlink(user.image, err => console.log(err));
   } else {
     updatedImage = user.image;
   }
@@ -84,6 +87,9 @@ const updateUserById = async (req, res, next) => {
     return next(new HttpError(`Could not save user data - "${error}"`, 500));
   }
 
+  if (req.file && currentImage !== defaultImagePath) {
+    fs.unlink(currentImage, err => console.log(err));
+  }
   return res.json({ user: updatedUser.toObject({ getters: true }) });
 };
 
@@ -149,9 +155,7 @@ const signUp = async (req, res, next) => {
     name,
     email,
     country,
-    image: req.file
-      ? req.file.path
-      : 'images/users/00_default-user-image-owl.jpg',
+    image: req.file ? req.file.path : defaultImagePath,
     profileUrl,
     password: hashedPassword,
     description,
