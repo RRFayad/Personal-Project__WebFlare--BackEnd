@@ -3,18 +3,19 @@ const { check } = require('express-validator');
 
 const businessControllers = require('../controllers/businesses-controller');
 const fileUpload = require('../middlewares/file-upload');
+const checkAuth = require('../middlewares/check-auth');
 
 const router = express.Router();
 
 router.get('/', businessControllers.getAllBusinesses);
 router.get('/:bid', businessControllers.getBusinessById);
 router.get('/user/:uid', businessControllers.getBusinessesByUserId);
+
+router.use(checkAuth);
+
 router.post(
   '/',
   fileUpload.single('image'),
-  (req, res, next) => {
-    next();
-  },
   [
     check('title')
       .isLength({ min: 3 })
@@ -37,7 +38,6 @@ router.post(
     check('description')
       .isLength({ min: 6 })
       .withMessage('Insert a valid description (6 characters)'),
-    check('ownerId').notEmpty(),
   ],
   businessControllers.createBusiness,
 );

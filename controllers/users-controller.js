@@ -1,7 +1,9 @@
 const fs = require('fs');
-const mongoose = require('mongoose');
 const { validationResult } = require('express-validator');
 const bcrypt = require('bcryptjs');
+const jwt = require('jsonwebtoken');
+require('dotenv').config();
+
 const HttpError = require('../models/http-error');
 const User = require('../models/user-model');
 const Business = require('../models/business-model');
@@ -175,7 +177,18 @@ const signUp = async (req, res, next) => {
 
   delete newUserData.password;
 
-  return res.status(201).json({ user: newUserData });
+  const token = {};
+  try {
+    token.value = jwt.sign({ userId: newUserData.id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+    const decodedToken = jwt.decode(token.value);
+    token.expirationTime = decodedToken.exp * 1000;
+  } catch (err) {
+    return next(new HttpError(`Sign Up failed - "${err}"`, 500));
+  }
+
+  return res.status(201).json({ user: newUserData, token });
 };
 
 const login = async (req, res, next) => {
@@ -194,7 +207,21 @@ const login = async (req, res, next) => {
 
   delete user.password;
 
-  return res.json({ user: user.toObject({ getters: true }) });
+  const token = {};
+  try {
+    token.value = jwt.sign({ userId: user.id }, process.env.JWT_SECRET, {
+      expiresIn: '1h',
+    });
+    const decodedToken = jwt.decode(token.value);
+    token.expirationTime = decodedToken.exp * 1000;
+  } catch (err) {
+    return next(new HttpError(`Sign Up failed - "${err}"`, 500));
+  }
+
+  return res.json({
+    user: user.toObject({ getters: true }),
+    token,
+  });
 };
 
 exports.getUserById = getUserById;

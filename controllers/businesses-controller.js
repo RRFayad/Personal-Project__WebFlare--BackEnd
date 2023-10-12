@@ -69,6 +69,8 @@ const createBusiness = async (req, res, next) => {
     return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
+  console.log('ihaa');
+
   const {
     title,
     type,
@@ -78,8 +80,9 @@ const createBusiness = async (req, res, next) => {
     monthlyProfit,
     askingPrice,
     description,
-    ownerId,
   } = req.body;
+
+  const ownerId = req.decodedTokenData.userId;
 
   const newBusiness = new Business({
     title,
@@ -109,7 +112,7 @@ const createBusiness = async (req, res, next) => {
     await user.save({ session });
     await session.commitTransaction();
   } catch (err) {
-    console.log(err);
+    // console.log(err);
     return next(new HttpError(`Saving business failed - "${err}"`, 500));
   }
 

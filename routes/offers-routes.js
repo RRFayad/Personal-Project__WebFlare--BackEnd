@@ -1,11 +1,16 @@
 const express = require('express');
 const { check } = require('express-validator');
+
 const offerControllers = require('../controllers/offers-controller');
+const checkAuth = require('../middlewares/check-auth');
 
 const router = express.Router();
 
 router.get('/user/:uid', offerControllers.getOffersByUserId);
 router.get('/:oid', offerControllers.getOfferById);
+
+router.use(checkAuth);
+
 router.post(
   '/',
   [
