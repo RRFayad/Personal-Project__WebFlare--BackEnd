@@ -7,6 +7,7 @@ const {
 } = require('../util/validators-and-formatters');
 const usersController = require('../controllers/users-controller');
 const fileUpload = require('../middlewares/file-upload');
+const checkAuth = require('../middlewares/check-auth');
 
 const router = express.Router();
 
@@ -36,6 +37,19 @@ router.post(
   usersController.signUp,
 );
 router.post('/login', usersController.login);
+
+router.patch(
+  '/update-password/:uid',
+  check('newPassword')
+    .custom(passwordValidator)
+    .withMessage(
+      `Password must contain at least: 6 to 20 characters, Uppercase, Lowercase, Number and a Special Character`,
+    ),
+  usersController.updatePasswordById,
+);
+
+router.use(checkAuth);
+
 router.patch(
   '/:uid',
   fileUpload.single('image'),
@@ -56,15 +70,6 @@ router.patch(
       .withMessage('Description must have at least 6 characters'),
   ],
   usersController.updateUserById,
-);
-router.patch(
-  '/update-password/:uid',
-  check('newPassword')
-    .custom(passwordValidator)
-    .withMessage(
-      `Password must contain at least: 6 to 20 characters, Uppercase, Lowercase, Number and a Special Character`,
-    ),
-  usersController.updatePasswordById,
 );
 
 module.exports = router;

@@ -51,6 +51,10 @@ const updateUserById = async (req, res, next) => {
 
   const userId = req.params.uid;
 
+  if (userId !== req.decodedTokenData.userId) {
+    return next(new HttpError('User not authorized', 403));
+  }
+
   const { name, profileUrl, country, email, description } = req.body;
 
   let user;

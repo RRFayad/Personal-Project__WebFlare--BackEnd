@@ -8,7 +8,11 @@ module.exports = (req, res, next) => {
     return next();
   }
   try {
-    const token = req.headers.authorization.split(' ')[1]; // Set header as Bearer TOKEN
+    if (!req.headers.authorization) {
+      return next(new HttpError('Not Authenticated (No Token)', 403));
+    }
+    const token = req.headers.authorization.replace(/\s+/g, ' ').split(' ')[1];
+    // Set header as Bearer TOKEN (regex for removing extra spaces in the header )
     if (!token) {
       return next(new HttpError('Not Authenticated', 403));
     }
