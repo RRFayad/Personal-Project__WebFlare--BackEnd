@@ -52,7 +52,9 @@ const createOffer = async (req, res, next) => {
     return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
-  const { businessId, message, offerValue, senderId } = req.body;
+  const { businessId, message, offerValue } = req.body;
+
+  const senderId = req.decodedTokenData.userId;
 
   const newOffer = new Offer({
     business: businessId,
@@ -94,14 +96,20 @@ const acceptOfferById = async (req, res, next) => {
   const offerId = req.params.oid;
 
   let offer;
+  let offerReceiverId;
   try {
-    offer = await Offer.findById(offerId);
+    offer = await Offer.findById(offerId).populate('business');
+    offerReceiverId = offer.business.owner.toString();
   } catch (error) {
     return next(new HttpError(`Fetching offer failed - "${error}"`, 500));
   }
 
   if (!offer) {
     return next(new HttpError('Offer not found', 404));
+  }
+
+  if (offerReceiverId !== req.decodedTokenData.userId) {
+    return next(new HttpError('Not Authorized', 403));
   }
 
   offer.status = 'accepted';
@@ -134,6 +142,10 @@ const deleteOfferById = async (req, res, next) => {
 
   if (!offer) {
     return next(new HttpError('Offer not found', 404));
+  }
+
+  if (offerReceiver.id !== req.decodedTokenData.userId) {
+    return next(new HttpError('Not Authorized', 403));
   }
 
   try {

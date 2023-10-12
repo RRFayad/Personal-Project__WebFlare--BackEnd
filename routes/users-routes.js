@@ -55,10 +55,6 @@ router.patch(
   fileUpload.single('image'),
   [
     check('name').custom(fullNameValidator).withMessage('Insert Full Name'),
-    check('imageUrl')
-      .optional()
-      .custom(urlValidator)
-      .withMessage('Image Url not valid'),
     check('profileUrl')
       .optional()
       .custom(urlValidator)
