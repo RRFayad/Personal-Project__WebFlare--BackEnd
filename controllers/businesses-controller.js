@@ -69,8 +69,6 @@ const createBusiness = async (req, res, next) => {
     return next(new HttpError(`${errors.array()[0].msg}`, 422));
   }
 
-  console.log('ihaa');
-
   const {
     title,
     type,
@@ -152,6 +150,10 @@ const updateBusinessById = async (req, res, next) => {
     return next(new HttpError('Business not found', 404));
   }
 
+  if (business.owner.toString() !== req.decodedTokenData.userId) {
+    return next(new HttpError('User not authorized', 403));
+  }
+
   let updatedImage;
   if (req.file) {
     updatedImage = req.file.path;
@@ -195,6 +197,10 @@ const deleteBusinessById = async (req, res, next) => {
     imageToBeDeleted = business.image;
   } catch (error) {
     return next(new HttpError(`Fetching business failed - "${error}"`, 500));
+  }
+
+  if (business.owner.id.toString() !== req.decodedTokenData.userId) {
+    return next(new HttpError('User not authorized', 403));
   }
 
   let offers;
