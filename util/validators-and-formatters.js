@@ -41,7 +41,7 @@ exports.passwordValidator = password => {
   const hasUppercase = /[A-Z]/.test(password);
   const hasLowercase = /[a-z]/.test(password);
   const hasNumber = /\d/.test(password);
-  const hasSpecialChar = /[!@#$%^&*()_+\-=\[\]{};':"\\|,.<>\/?]/.test(password);
+  const hasSpecialChar = /[!@#$%^&*()_+-=[\]{};':"\\|,.<>/?]/.test(password);
 
   if (password.length < minLength || password.length > maxLength) {
     return false;
