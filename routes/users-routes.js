@@ -19,10 +19,6 @@ router.post(
   fileUpload.single('image'),
   [
     check('name').custom(fullNameValidator).withMessage('Insert Full Name'),
-    check('profileUrl')
-      .optional()
-      .custom(urlValidator)
-      .withMessage('Profile Url not valid'),
     check('country').isLength({ min: 3 }).withMessage('Insert Country'),
     check('email').trim().isEmail().withMessage('Insert a valid e-mail'),
     check('password')
