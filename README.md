@@ -79,14 +79,3 @@ The controllers in the back end are responsible for handling requests from the A
 ## Authentication
 
 WebFlare uses JSON Web Tokens (JWT) for user authentication. When a user registers or logs in, a JWT is generated and sent to the client. The client includes this token in its requests to authenticated routes. The back end validates and decodes the token to verify the user's identity.
-
-## Contributing
-
-We welcome contributions from the community. If you'd like to contribute to the WebFlare Back End, please follow these guidelines:
-
-1. Fork this repository.
-2. Create a new branch for your feature or bug fix.
-3. Make your changes and test them locally.
-4. Submit a pull request with a clear description of your changes.
-
-Thank you for your contributions to the WebFlare project!
