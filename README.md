@@ -28,10 +28,9 @@ To set up the WebFlare Back End locally, follow these steps:
 3. Set up a MongoDB database and add the connection string to your environment variables.
 4. Create a `.env` file and add the following variables:
 
-```env
-PORT=5000
-MONGO_URI=your-mongodb-connection-string
-JWT_SECRET=your-secret-key
+- PORT=5000
+- MONGO_URI=your-mongodb-connection-string
+- JWT_SECRET=your-secret-key
 
 ## Running the Server
 
